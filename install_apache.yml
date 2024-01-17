@@ -4,6 +4,10 @@
   become: true
   tasks:
 
+  - name: update repository
+    apt:
+      update_cache: yes
+
   - name: Installing Apache2 Package
     apt:
       name: apache2
