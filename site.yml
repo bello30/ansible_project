@@ -10,10 +10,15 @@
 
   - name: Installing Apache2 Package
     apt:
-      name: apache2
+      name:
+        - apache2
+        - libapache2-mod-php
       state: latest
+    when: ansible_distribution == "Ubuntu"
 
-  - name: add php support for apache
+
+  - name: install mariadb package "Ubuntu"
     apt:
-      name: libapache2-mod-php
+      name: mariadb-server
       state: latest
+    when: ansible_distribution == "Ubuntu"  
