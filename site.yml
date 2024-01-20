@@ -24,10 +24,38 @@
     when: ansible_distribution == "Ubuntu"
 
   - name: copy default html file for site
-    tags: apache, apache2
+    tags: apache,apache2,ubuntu
     copy:
       src: default_site.html
       dest: /var/www/html/index.html
       owner: root
       group: root
       mode: 0644
+
+
+
+- name: Install Terraform
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Install unzip package
+      package:
+        name: unzip
+        state: present
+
+    - name: Download Terraform binary
+      get_url:
+        url: "https://releases.hashicorp.com/terraform/0.12.24/terraform_0.12.24_linux_amd64.zip"
+        dest: /tmp/terraform.zip
+
+    - name: Unzip Terraform binary
+      unarchive:
+        src: /tmp/terraform.zip
+        dest: /usr/local/bin
+        remote_src: yes
+
+    - name: Set executable permission for Terraform binary
+      file:
+        path: /usr/local/bin/terraform
+        mode: +x
