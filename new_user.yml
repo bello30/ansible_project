@@ -1,0 +1,5 @@
+# new_user.yml
+new_user: martin
+new_user_password: secure_password
+ssh_public_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINCWveexJfrX3EUG//uA2B9qrn4pCPjBrYYg9i8pLZj1 ansible"
+
