@@ -1,0 +1,113 @@
+---
+
+- hosts: all
+  become: true
+  tasks:
+
+  - name: update repository
+    apt:
+      update_cache: yes
+
+  - name: Installing Apache2 Package
+    apt:
+      name:
+        - apache2
+        - libapache2-mod-php
+      state: latest
+    when: ansible_distribution == "Ubuntu"
+
+
+  - name: install mariadb package "Ubuntu"
+    apt:
+      name: mariadb-server
+      state: latest
+    when: ansible_distribution == "Ubuntu"
+
+  - name: copy default html file for site
+    tags: apache,apache2,ubuntu
+    copy:
+      src: default_site.html
+      dest: /var/www/html/index.html
+      owner: root
+      group: root
+      mode: 0644
+
+
+- name: Install Terraform
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Install unzip package
+      package:
+        name: unzip
+        state: present
+
+    - name: Download Terraform binary
+      get_url:
+        url: "https://releases.hashicorp.com/terraform/0.12.24/terraform_0.12.24_linux_amd64.zip"
+        dest: /tmp/terraform.zip
+
+    - name: Unzip Terraform binary
+      unarchive:
+        src: /tmp/terraform.zip
+        dest: /usr/local/bin
+        remote_src: yes
+
+    - name: Set executable permission for Terraform binary
+      file:
+        path: /usr/local/bin/terraform
+        mode: +x
+
+
+- name: Automate Crontab Task
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Add crontab entry
+      cron:
+        name: "Run my_script.sh daily"
+        minute: "0"
+        hour: "0"
+        job: "/path/to/my_script.sh"
+
+
+- name: Automate Bash History Backup
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Add crontab entry for bash history backup
+      cron:
+        name: "Backup bash history daily"
+        minute: "0"
+        hour: "8"
+        job: "cp ~/.bash_history"
+
+
+- hosts: all
+  become: true
+  tasks:
+
+  - name: create martin user
+    tags: always
+    user:
+      name: martin
+      groups: root
+
+
+  - name: add ssh key for martin
+    tags: always
+    authorized_key:
+      user: martin
+      key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINCWveexJfrX3EUG//uA2B9qrn4pCPjBrYYg9i8pLZj1 ansible"
+
+  - name: add martin to sudeors
+    tags: always
+    copy:
+      src: sudoer_martin
+      dest: /etc/sudoers.d/martin
+      owner: root
+      group: root
+      mode: 0440
